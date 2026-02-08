@@ -1,9 +1,11 @@
-import { Router, type Request, type Response } from "express";
-import { admin } from "../config/firebase/firebase.js";
-import { handleGoogleAuth } from "../controller/auth.controller.js";
+import { Router } from "express";
+import { handleGoogleAuth, handleGetUserData, handleRefreshToken } from "../controller/auth.controller.js";
+import { handleUserAccessToken } from "../middlewares/auth.middleware.js";
 
 const authRouter = Router();
 
 authRouter.post("/google", handleGoogleAuth);
+authRouter.get("/user", handleUserAccessToken, handleGetUserData);
+authRouter.post("/refresh", handleRefreshToken);
 
 export default authRouter;
