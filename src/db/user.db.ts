@@ -1,5 +1,5 @@
 import { fireStore } from "../config/firebase/firebase.js";
-import type { UserData } from "../types/db/user.db.js";
+import type { UserData } from "../types/user.js";
 
 export class UserDB {
     private static instance: UserDB;

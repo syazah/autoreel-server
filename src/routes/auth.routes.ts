@@ -8,4 +8,4 @@ authRouter.post("/google", handleGoogleAuth);
 authRouter.get("/user", handleUserAccessToken, handleGetUserData);
 authRouter.post("/refresh", handleRefreshToken);
 
-export default authRouter;
+export { authRouter };
