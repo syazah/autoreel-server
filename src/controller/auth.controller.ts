@@ -5,10 +5,11 @@ import httpStatus from "http-status";
 import AppSuccess from "../config/AppSuccess.js";
 import { JWTService } from "../services/JWTService.js";
 import { UserDB } from "../db/user.db.js";
+import { ProjectDB } from "../db/project.db.js";
 
 const jwtService = JWTService.getInstance();
 const userDB = UserDB.getInstance();
-
+const projectDB = ProjectDB.getInstance();
 export const handleGoogleAuth = async (req: Request, res: Response, next: NextFunction) => {
     const { idToken } = req.body;
     if (!idToken) {
@@ -62,11 +63,16 @@ export const handleRefreshToken = async (req: Request, res: Response, next: Next
 export const handleGetUserData = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.headers.userId as string;
+        const getProjects = req.query.getProjects === 'true';
         const user = await userDB.getUserOrNull(userId);
+        let projects = null
+        if (getProjects) {
+            projects = await projectDB.getAllProjectsForUser(userId);
+        }
         if (!user) {
             throw new AppError("User not found", httpStatus.NOT_FOUND);
         }
-        return new AppSuccess(res, httpStatus.OK, { user }, "User data fetched successfully").returnResponse();
+        return new AppSuccess(res, httpStatus.OK, { user, projects }, "User data fetched successfully").returnResponse();
     } catch (error) {
         if (error instanceof AppError) {
             return next(error);

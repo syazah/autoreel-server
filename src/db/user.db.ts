@@ -17,6 +17,7 @@ export class UserDB {
         const user = await fireStore.collection(this.collectionName).doc(uid).get();
         return user.exists ? { ...user.data() } : null;
     }
+
     public async createUser(userData: UserData) {
         const user = await fireStore.collection(this.collectionName).doc(userData.uid).set(userData);
         return user;

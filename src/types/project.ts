@@ -1,8 +1,11 @@
 export interface Project {
-    id: string
     name: String
     frequency: number
     category: Category
+}
+
+export interface ProjectWithId extends Project {
+    id: string
 }
 
 enum Category {

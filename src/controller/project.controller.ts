@@ -4,15 +4,18 @@ import httpStatus from "http-status";
 import type { Project } from "../types/project.js";
 import { ProjectDB } from "../db/project.db.js";
 import AppSuccess from "../config/AppSuccess.js";
+import { v4 as uuidv4 } from 'uuid';
+
 
 const projectDB = ProjectDB.getInstance();
 export const handleCreateProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.headers.userId as string;
         const body = req.body as Project;
-        const project = await projectDB.createProject(userId, body);
+        const project = await projectDB.createProject(userId, { id: uuidv4(), ...body });
         return new AppSuccess(res, httpStatus.CREATED, { project }, "Project created successfully").returnResponse();
     } catch (error) {
+        console.log(error)
         if (error instanceof AppError) {
             return next(error)
         } else if (error instanceof Error) {
