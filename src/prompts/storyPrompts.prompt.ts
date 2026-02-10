@@ -1,5 +1,5 @@
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat.mjs";
-import { ProjectCategory } from "../types/project.js";
+import type { ProjectCategory } from "../types/project.js";
 
 export const createStoryPromptMessages = (
     userPrompt: string,
@@ -149,7 +149,7 @@ Create the video script blueprint now.
 
 const getSystemPromptForCategory = (projectCategory: ProjectCategory) => {
     switch (projectCategory) {
-        case ProjectCategory.CHILDREN:
+        case "Children":
             return `
 Audience age 6-12.
 Very simple language.
@@ -158,7 +158,7 @@ Clear moral lesson.
 No scary or dark themes.
 `;
 
-        case ProjectCategory.INFORMATIVE:
+        case "Informative":
             return `
 Educational and factual.
 Clear explanations.
@@ -166,7 +166,7 @@ Focus on usefulness.
 Avoid dramatic storytelling.
 `;
 
-        case ProjectCategory.FICTION:
+        case "Fiction":
             return `
 Imaginative narrative.
 Character driven.

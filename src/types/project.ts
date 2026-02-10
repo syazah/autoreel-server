@@ -1,15 +1,16 @@
-export interface Project {
-    name: String
-    frequency: number
-    category: ProjectCategory
-}
+import { z } from "zod";
 
-export interface ProjectWithId extends Project {
-    id: string
-}
+export const ProjectCategorySchema = z.enum(["Children", "Informative", "Fiction"]);
+export type ProjectCategory = z.infer<typeof ProjectCategorySchema>;
 
-export enum ProjectCategory {
-    CHILDREN = "Children",
-    INFORMATIVE = "Informative",
-    FICTION = "Fiction"
-}
+export const ProjectSchema = z.object({
+    name: z.string(),
+    frequency: z.number(),
+    category: ProjectCategorySchema,
+});
+export type Project = z.infer<typeof ProjectSchema>;
+
+export const ProjectWithIdSchema = ProjectSchema.extend({
+    id: z.string(),
+});
+export type ProjectWithId = z.infer<typeof ProjectWithIdSchema>;

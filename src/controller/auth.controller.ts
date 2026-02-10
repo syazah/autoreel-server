@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { z } from "zod";
 import { admin } from "../config/firebase/firebase.js";
 import AppError from "../config/AppError.js";
 import httpStatus from "http-status";
@@ -10,12 +11,17 @@ import { ProjectDB } from "../db/project.db.js";
 const jwtService = JWTService.getInstance();
 const userDB = UserDB.getInstance();
 const projectDB = ProjectDB.getInstance();
+
+const GoogleAuthBody = z.object({ idToken: z.string() });
+const RefreshTokenBody = z.object({ refreshToken: z.string() });
+
 export const handleGoogleAuth = async (req: Request, res: Response, next: NextFunction) => {
-    const { idToken } = req.body;
-    if (!idToken) {
-        throw new AppError("Missing idToken", httpStatus.BAD_REQUEST);
+    const parsed = GoogleAuthBody.safeParse(req.body);
+    if (!parsed.success) {
+        return next(new AppError("Missing or invalid idToken", httpStatus.BAD_REQUEST));
     }
     try {
+        const { idToken } = parsed.data;
         const decodedToken = await admin.auth().verifyIdToken(idToken);
         const uid = decodedToken.uid;
         const username = decodedToken.email
@@ -36,11 +42,12 @@ export const handleGoogleAuth = async (req: Request, res: Response, next: NextFu
 }
 
 export const handleRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-        throw new AppError("Missing refresh token", httpStatus.BAD_REQUEST);
+    const parsed = RefreshTokenBody.safeParse(req.body);
+    if (!parsed.success) {
+        return next(new AppError("Missing or invalid refresh token", httpStatus.BAD_REQUEST));
     }
     try {
+        const { refreshToken } = parsed.data;
         const payload = jwtService.verifyRefreshToken(refreshToken) as { userId: string; tokenVersion: number };
         const user = await userDB.getUserOrNull(payload.userId);
         if (!user) {

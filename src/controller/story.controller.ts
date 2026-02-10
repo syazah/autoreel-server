@@ -1,7 +1,9 @@
 import type { NextFunction, Request, Response } from "express"
+import { z } from "zod"
 import AppError from "../config/AppError.js"
 import httpStatus from "http-status";
-import type { LLMScriptFormat, LLMTextStoryRequest } from "../types/story.js";
+import { LLMTextStoryRequestSchema } from "../types/story.js";
+import type { LLMScriptFormat } from "../types/story.js";
 import AppSuccess from "../config/AppSuccess.js";
 import { GroqClient } from "../config/groq/client.js";
 import { createStoryPromptMessages, llmScriptSchema } from "../prompts/storyPrompts.prompt.js";
@@ -13,7 +15,11 @@ const storyDB = StoryDB.getInstance();
 export const handleCreateScriptPromptController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.headers.userId as string;
-        const request = req.body as LLMTextStoryRequest
+        const parsed = LLMTextStoryRequestSchema.safeParse(req.body);
+        if (!parsed.success) {
+            return next(new AppError(`Invalid request: ${parsed.error.issues.map(i => i.message).join(", ")}`, httpStatus.BAD_REQUEST));
+        }
+        const request = parsed.data;
 
         // get system prompt for the project for each project category.
         const storyPrompt = createStoryPromptMessages(request.prompt, request.projectCategory)
@@ -39,13 +45,19 @@ export const handleCreateScriptPromptController = async (req: Request, res: Resp
     }
 }
 
+const GetScriptsQuery = z.object({ projectId: z.string() });
+
 export const handleGetScriptsPromptController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.headers.userId as string;
-        const projectId = req.query.projectId as string;
-        if (!userId || !projectId) {
-            return next(new AppError("userId and projectId are required", httpStatus.BAD_REQUEST))
+        const parsed = GetScriptsQuery.safeParse(req.query);
+        if (!parsed.success) {
+            return next(new AppError("projectId query parameter is required", httpStatus.BAD_REQUEST));
         }
+        if (!userId) {
+            return next(new AppError("userId is required", httpStatus.BAD_REQUEST));
+        }
+        const { projectId } = parsed.data;
         const stories = await storyDB.getAllStoriesByProjectId(userId, projectId);
         return new AppSuccess(res, httpStatus.OK, { stories }, "Stories fetched successfully").returnResponse();
     } catch (error) {
