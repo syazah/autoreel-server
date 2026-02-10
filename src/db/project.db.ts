@@ -1,10 +1,9 @@
 import { fireStore } from "../config/firebase/firebase.js";
 import type { Project, ProjectWithId } from "../types/project.js";
+import { collectionNames } from "./collection.names.js";
 
 export class ProjectDB {
     private static instance: ProjectDB;
-    private userCollectionName = "user";
-    private projectCollectionName = "projects";
     private constructor() { };
 
     public static getInstance(): ProjectDB {
@@ -16,9 +15,9 @@ export class ProjectDB {
 
     public async createProject(userId: string, projectData: ProjectWithId) {
         const project = await fireStore
-            .collection(this.userCollectionName)
+            .collection(collectionNames.userCollectionName)
             .doc(userId)
-            .collection(this.projectCollectionName)
+            .collection(collectionNames.projectCollectionName)
             .doc(projectData.id)
             .set(projectData);
         return project;
@@ -26,9 +25,9 @@ export class ProjectDB {
 
     public async getAllProjectsForUser(userId: string) {
         const projectsSnapshot = await fireStore
-            .collection(this.userCollectionName)
+            .collection(collectionNames.userCollectionName)
             .doc(userId)
-            .collection(this.projectCollectionName)
+            .collection(collectionNames.projectCollectionName)
             .get();
         const projects: Project[] = [];
         projectsSnapshot.forEach((doc) => {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ProjectCategorySchema = z.enum(["Children", "Informative", "Fiction"]);
+export const ProjectCategorySchema = z.enum(["Entertainment", "Educational", "Storytelling", "Lifestyle"]);
 export type ProjectCategory = z.infer<typeof ProjectCategorySchema>;
 
 export const ProjectSchema = z.object({

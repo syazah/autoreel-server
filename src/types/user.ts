@@ -6,6 +6,7 @@ export const UserDataSchema = z.object({
     phoneNumber: z.string(),
     profilePicture: z.string(),
     version: z.number(),
+    name: z.string(),
 });
 
 export type UserData = z.infer<typeof UserDataSchema>;

@@ -149,7 +149,7 @@ Create the video script blueprint now.
 
 const getSystemPromptForCategory = (projectCategory: ProjectCategory) => {
     switch (projectCategory) {
-        case "Children":
+        case "Entertainment":
             return `
 Audience age 6-12.
 Very simple language.
@@ -158,7 +158,7 @@ Clear moral lesson.
 No scary or dark themes.
 `;
 
-        case "Informative":
+        case "Educational":
             return `
 Educational and factual.
 Clear explanations.
@@ -166,13 +166,13 @@ Focus on usefulness.
 Avoid dramatic storytelling.
 `;
 
-        case "Fiction":
-            return `
-Imaginative narrative.
-Character driven.
-Emotionally engaging.
-Easy to follow.
-`;
+        case "Storytelling":
+            return `Engaging narrative.`;
+        case "Lifestyle":
+            return `Relatable everyday topics.
+Practical tips.
+Authentic tone.
+Focus on self-improvement.`;
 
         default:
             return `General audience short-form social media content.`;

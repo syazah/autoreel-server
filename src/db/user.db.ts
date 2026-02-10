@@ -1,9 +1,9 @@
 import { fireStore } from "../config/firebase/firebase.js";
 import type { UserData } from "../types/user.js";
+import { collectionNames } from "./collection.names.js";
 
 export class UserDB {
     private static instance: UserDB;
-    private collectionName = "user";
     constructor() { }
 
     public static getInstance(): UserDB {
@@ -14,12 +14,12 @@ export class UserDB {
     }
 
     public async getUserOrNull(uid: string) {
-        const user = await fireStore.collection(this.collectionName).doc(uid).get();
+        const user = await fireStore.collection(collectionNames.userCollectionName).doc(uid).get();
         return user.exists ? { ...user.data() } : null;
     }
 
     public async createUser(userData: UserData) {
-        const user = await fireStore.collection(this.collectionName).doc(userData.uid).set(userData);
-        return user;
+        const user = await fireStore.collection(collectionNames.userCollectionName).doc(userData.uid).set(userData);
+        return userData;
     }
 }

@@ -1,10 +1,8 @@
 import { fireStore } from "../config/firebase/firebase.js";
+import { collectionNames } from "./collection.names.js";
 
 export class StoryDB {
     private static instance: StoryDB;
-    private collectionName = "story"
-    private userCollectionName = "user"
-    private projectCollectionName = "projects"
 
     private constructor() { }
 
@@ -16,9 +14,9 @@ export class StoryDB {
     }
 
     public async createStory(userId: string, projectId: string, storyData: any) {
-        const storyRef = fireStore.collection(this.userCollectionName).doc(userId)
-            .collection(this.projectCollectionName).doc(projectId)
-            .collection(this.collectionName).doc(storyData.id);
+        const storyRef = fireStore.collection(collectionNames.userCollectionName).doc(userId)
+            .collection(collectionNames.projectCollectionName).doc(projectId)
+            .collection(collectionNames.storyCollectionName).doc(storyData.id);
 
         await storyRef.set(storyData);
         const storyDoc = await storyRef.get();
@@ -26,9 +24,9 @@ export class StoryDB {
     }
 
     public async getAllStoriesByProjectId(userId: string, projectId: string) {
-        const storiesRef = fireStore.collection(this.userCollectionName).doc(userId)
-            .collection(this.projectCollectionName).doc(projectId)
-            .collection(this.collectionName);
+        const storiesRef = fireStore.collection(collectionNames.userCollectionName).doc(userId)
+            .collection(collectionNames.projectCollectionName).doc(projectId)
+            .collection(collectionNames.storyCollectionName);
 
         const snapshot = await storiesRef.get();
         const stories: any[] = [];

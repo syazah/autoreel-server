@@ -8,6 +8,7 @@ import { JWTService } from "../services/JWTService.js";
 import { UserDB } from "../db/user.db.js";
 import { ProjectDB } from "../db/project.db.js";
 
+
 const jwtService = JWTService.getInstance();
 const userDB = UserDB.getInstance();
 const projectDB = ProjectDB.getInstance();
@@ -27,9 +28,10 @@ export const handleGoogleAuth = async (req: Request, res: Response, next: NextFu
         const username = decodedToken.email
         const phoneNumber = decodedToken.phone_number
         const profilePicture = decodedToken.picture
+        const name = decodedToken.name
         let user = await userDB.getUserOrNull(uid);
         if (user === null) {
-            user = await userDB.createUser({ uid, username: username || "", phoneNumber: phoneNumber || "", profilePicture: profilePicture || "", version: 0 });
+            user = await userDB.createUser({ uid, username: username || "", phoneNumber: phoneNumber || "", profilePicture: profilePicture || "", name: name || "", version: 0 });
         }
 
         const accessToken = jwtService.signAccessToken(uid);
