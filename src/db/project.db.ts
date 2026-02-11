@@ -20,7 +20,7 @@ export class ProjectDB {
             .collection(collectionNames.projectCollectionName)
             .doc(projectData.id)
             .set(projectData);
-        return project;
+        return projectData;
     }
 
     public async getAllProjectsForUser(userId: string) {
