@@ -1,9 +1,14 @@
-import { VideoCategoriesSchema, type VideoCategory } from "./video.js";
 import { z } from "zod";
 
-export const PlanRequestBody = z.object({
-    frequency: z.number().positive(),
-    categories: z.array(VideoCategoriesSchema)
-})
+export const PlanTopicSchema = z.object({
+    title: z.string(),
+    shortSummary: z.string(),
+});
 
-export type PlanRequestBodySchema = z.infer<typeof PlanRequestBody>
+export const PlanResponseSchema = z.object({
+    topics: z.array(PlanTopicSchema),
+});
+
+export type PlanResponse = z.infer<typeof PlanResponseSchema>;
+export type PlanTopic = z.infer<typeof PlanTopicSchema>;
+export const PlanResponseJsonSchema = z.toJSONSchema(PlanResponseSchema) as Record<string, unknown>;

@@ -6,6 +6,7 @@ import httpStatus from "http-status";
 import AppSuccess from "../config/AppSuccess.js";
 import { JWTService } from "../services/JWTService.js";
 import { UserDB } from "../db/user.db.js";
+import { VideoCategoriesSchema } from "../types/video.js";
 
 
 const jwtService = JWTService.getInstance();
@@ -13,7 +14,7 @@ const userDB = UserDB.getInstance();
 
 const GoogleAuthBody = z.object({ idToken: z.string() });
 const RefreshTokenBody = z.object({ refreshToken: z.string() });
-const OnboardBody = z.object({ frequency: z.number() });
+const OnboardBody = z.object({ frequency: z.number(), categories: z.array(VideoCategoriesSchema) });
 
 export const handleGoogleAuth = async (req: Request, res: Response, next: NextFunction) => {
     const parsed = GoogleAuthBody.safeParse(req.body);
@@ -37,7 +38,6 @@ export const handleGoogleAuth = async (req: Request, res: Response, next: NextFu
         const refreshToken = jwtService.signRefreshToken(uid, user.version)
         return new AppSuccess(res, httpStatus.OK, { accessToken, refreshToken, user }, "User authenticated successfully").returnResponse();
     } catch (error) {
-        console.error("Auth error:", error);
         return next(new AppError("Invalid token", httpStatus.UNAUTHORIZED));
     }
 }
@@ -93,7 +93,7 @@ export const handleOnboardUser = async (req: Request, res: Response, next: NextF
     }
     try {
         const userId = req.headers.userId as string;
-        await userDB.updateUser(userId, { frequency: parsed.data.frequency, isOnboarded: true });
+        await userDB.updateUser(userId, { frequency: parsed.data.frequency, categories: parsed.data.categories, isOnboarded: true });
         return new AppSuccess(res, httpStatus.OK, null, "User onboarded successfully").returnResponse();
     } catch (error) {
         if (error instanceof AppError) {

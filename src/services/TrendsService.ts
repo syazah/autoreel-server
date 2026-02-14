@@ -184,6 +184,7 @@ export class TrendsService {
         return {
             id: video.id,
             title: video.snippet.title,
+            description: video.snippet.description,
             channel: video.snippet.channelTitle,
             categoryId: video.snippet.categoryId,
             publishedAt: video.snippet.publishedAt,
@@ -238,8 +239,45 @@ export class TrendsService {
         try {
             return this.getCategorizedTrends(trendsRequest);
         } catch (error) {
-            console.error("Error fetching trends:", error);
             throw new Error("Failed to fetch trends");
         }
+    }
+
+    public async getCategoryTrendVideos(requestedCategories: VideoCategory[]) {
+        let categories = ""
+        requestedCategories.forEach((cat, index) => {
+            categories += this.getCategoryId(cat) + ",";
+        })
+        let allVideos: CategorizedVideo[] = [];
+        for (const cat of requestedCategories) {
+            const categoryId = this.getCategoryId(cat);
+            if (categoryId) {
+                let YTTrends;
+                try {
+                    YTTrends = await this.getYTTrends("US", 7, categoryId);
+                } catch (error) {
+                    console.error(`Error fetching trends for category ${cat}:`, error);
+                    continue; // Skip this category and move to the next one
+                }
+                const videos = YTTrends.items.map((video: any) => {
+                    const metrics = this.calculateEngagementMetrics(video);
+                    return this.categorizeVideos(video, metrics);
+                });
+                allVideos.push(...videos);
+            }
+        }
+
+        const videos: CategorizedVideo[] = allVideos
+            .filter((v: CategorizedVideo) => v.metrics.engagementRate > 5) // >5% is excellent
+            .sort((a: CategorizedVideo, b: CategorizedVideo) => b.metrics.engagementRate - a.metrics.engagementRate)
+            .slice(0, 7);
+
+        const result = videos.map((video: CategorizedVideo) => {
+            return {
+                title: video.title,
+                description: video.description,
+            }
+        })
+        return result
     }
 }

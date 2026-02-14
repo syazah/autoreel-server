@@ -31,7 +31,6 @@ export class GroqClient {
             model: this.model,
             messages,
             temperature: 0.3,
-
             response_format: {
                 type: "json_schema",
                 json_schema: {
@@ -52,6 +51,21 @@ export class GroqClient {
             return JSON.parse(content) as T;
         } catch (err) {
             throw new Error("Failed to parse structured LLM response: " + content);
+        }
+    }
+
+    public async *getCompletionStreams<T>(
+        messages: ChatCompletionMessageParam[],
+    ): AsyncGenerator<string> {
+        const stream = await this.groq.chat.completions.create({
+            model: this.model,
+            messages,
+            temperature: 0.7,
+            stream: true,
+        });
+
+        for await (const chunk of stream) {
+            yield chunk.choices[0]?.delta?.content || "";
         }
     }
 

@@ -32,6 +32,7 @@ export type VideoMetrics = z.infer<typeof VideoMetricsSchema>;
 export const CategorizedVideoSchema = z.object({
     id: z.string(),
     title: z.string(),
+    description: z.string(),
     channel: z.string(),
     categoryId: z.string(),
     publishedAt: z.string(),
