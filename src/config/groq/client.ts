@@ -1,6 +1,11 @@
 import Groq from "groq-sdk";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat.mjs";
-import type { StructuredCompletionOptions } from "../../types/story.js";
+
+type StructuredCompletionOptions<T> = {
+    messages: ChatCompletionMessageParam[];
+    schema: Record<string, unknown>;
+    schemaName: string;
+};
 
 export class GroqClient {
     private static instance: GroqClient;

@@ -22,4 +22,8 @@ export class UserDB {
         const user = await fireStore.collection(collectionNames.userCollectionName).doc(userData.uid).set(userData);
         return userData;
     }
+
+    public async updateUser(uid: string, data: Partial<UserData>) {
+        await fireStore.collection(collectionNames.userCollectionName).doc(uid).update(data);
+    }
 }

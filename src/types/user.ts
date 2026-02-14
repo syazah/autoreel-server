@@ -7,6 +7,8 @@ export const UserDataSchema = z.object({
     profilePicture: z.string(),
     version: z.number(),
     name: z.string(),
+    frequency: z.number().optional(),
+    isOnboarded: z.boolean().optional(),
 });
 
 export type UserData = z.infer<typeof UserDataSchema>;
