@@ -33,7 +33,7 @@ export class PlanDB {
                 .doc(userId)
                 .collection(collectionNames.planCollectionName)
                 .doc(this.dateKey(today, index))
-                .set(topic);
+                .set({ ...topic, version: 0 });
         });
 
         await Promise.all(writes);

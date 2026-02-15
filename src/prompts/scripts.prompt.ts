@@ -1,7 +1,7 @@
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat.mjs";
 import type { PlanResponse, PlanTopic } from "../types/plan.js";
 
-const SYSTEM_PROMPT = `You are an expert short-form video content creator and a professional script writer. Your job is to create a script for a short-form video based on the provided content topic and key points.
+const SYSTEM_PROMPT = `You are an expert short-form video content creator and a professional script writer. Your job is to create a descriptive script for a short-form video based on the provided content topic and key points.
 
 Rules:
 - The script should be concise, engaging, and optimized for a 60-second video format.

@@ -8,11 +8,13 @@ import { buildWeekPlanMessages } from "../prompts/plan.prompt.js";
 import { UserDB } from "../db/user.db.js";
 import AppSuccess from "../config/AppSuccess.js";
 import { PlanDB } from "../db/plan.db.js";
+import { VideoDB } from "../db/video.db.js";
 
 const trendsService = TrendsService.getInstance();
 const groqClient = GroqClient.getInstance();
 const userDB = UserDB.getInstance();
 const planDB = PlanDB.getInstance();
+const videoDB = VideoDB.getInstance();
 
 export const handlePlanController = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -56,10 +58,11 @@ export const handleGetPlansController = async (req: Request, res: Response, next
         const userId = req.headers.userId as string;
         const { date } = req.body as { date: string }
         const plans = await planDB.getPlanForUserOnDate(userId, date)
+        const videoData = await videoDB.getVideoDataForCurrentVersion(userId, date, plans.version)
         return new AppSuccess(
             res,
             httpStatus.OK,
-            { plans },
+            { plans: { ...plans, ...videoData } },
             "Plans Retrieved Successfully",
         ).returnResponse();
     } catch (error) {
