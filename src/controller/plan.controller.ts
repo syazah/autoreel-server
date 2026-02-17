@@ -16,6 +16,7 @@ const userDB = UserDB.getInstance();
 const planDB = PlanDB.getInstance();
 const videoDB = VideoDB.getInstance();
 
+//TODO: Migrate The Logic Of Building Plan To Separate Service File.
 export const handlePlanController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.headers.userId as string;
@@ -57,8 +58,30 @@ export const handleGetPlansController = async (req: Request, res: Response, next
     try {
         const userId = req.headers.userId as string;
         const { date } = req.body as { date: string }
-        const plans = await planDB.getPlanForUserOnDate(userId, date)
-        const videoData = await videoDB.getVideoDataForCurrentVersion(userId, date, plans.version)
+        let plans = await planDB.getPlanForUserOnDate(userId, date)
+        const user = await userDB.getUserOrNull(userId);
+        if (!user) {
+            return next(new AppError("User Not Found", httpStatus.BAD_REQUEST));
+        }
+        let { frequency, categories } = user;
+        if (!categories) {
+            categories = []
+        }
+        if (!plans) {
+            const trendingContent = await trendsService.getCategoryTrendVideos(categories);
+
+            const messages = buildWeekPlanMessages(frequency || 1, categories, trendingContent);
+
+            const plan = await groqClient.getStructuredCompletion<PlanResponse>({
+                messages,
+                schema: PlanResponseJsonSchema,
+                schemaName: "WeeklyContentPlan",
+            });
+            await planDB.updateCompletePlan(userId, plan)
+            const dateObj = new Date(date);
+            plans = await planDB.addPlansInDateRange(userId, dateObj, plan)
+        }
+        const videoData = await videoDB.getVideoDataForCurrentVersion(userId, date, plans.version || "0")
         return new AppSuccess(
             res,
             httpStatus.OK,

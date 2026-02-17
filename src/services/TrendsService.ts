@@ -254,7 +254,7 @@ export class TrendsService {
             if (categoryId) {
                 let YTTrends;
                 try {
-                    YTTrends = await this.getYTTrends("US", 7, categoryId);
+                    YTTrends = await this.getYTTrends("US", 10, categoryId);
                 } catch (error) {
                     console.error(`Error fetching trends for category ${cat}:`, error);
                     continue; // Skip this category and move to the next one

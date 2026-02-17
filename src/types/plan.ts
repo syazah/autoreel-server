@@ -4,7 +4,7 @@ import { z } from "zod";
 export const PlanTopicSchema = z.object({
     title: z.string(),
     shortSummary: z.string(),
-    version: z.string().optional(),
+    version: z.string().optional().nullable().default(null),
 });
 
 export const PlanResponseSchema = z.object({

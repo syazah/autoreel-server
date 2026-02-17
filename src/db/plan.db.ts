@@ -40,6 +40,23 @@ export class PlanDB {
         return plan;
     }
 
+    public async addPlansInDateRange(userId: string, startDate: Date, plan: PlanResponse): Promise<PlanTopic> {
+        if (!plan || !plan.topics || plan.topics.length === 0) {
+            throw new Error("Plan Data not found or invalid plan data provided");
+        }
+        const writes = plan.topics.map((topic, index) => {
+            return fireStore
+                .collection(collectionNames.userCollectionName)
+                .doc(userId)
+                .collection(collectionNames.planCollectionName)
+                .doc(this.dateKey(startDate, index))
+                .set({ ...topic, version: 0 });
+        });
+
+        await Promise.all(writes);
+        return plan.topics[0]!!;
+    }
+
     public async getPlanForUserOnDate(userId: string, date: string): Promise<PlanTopic> {
         const planCollectionRef = fireStore
             .collection(collectionNames.userCollectionName)

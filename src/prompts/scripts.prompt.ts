@@ -8,7 +8,8 @@ Rules:
 - Start with a hook to grab attention, followed by a clear introduction of the topic.
 - Use the key points to structure the main content, ensuring a logical flow.
 - End with a strong call-to-action or a memorable closing statement.
-- Output ONLY valid JSON matching the required schema. No extra text.
+- Output should be a descriptive text which should include all the necessary details for a video creator to understand and visualize the content, but should not include any instructions or explanations about the script itself.
+- The script should be written in a way that it can be easily followed by a video creator or can be used to generate a full LLM generated video.
 
 
 You will be provided with a content topic and a short summary of the topic used for creating the video. Use it to craft a compelling script that can be easily followed by a video creator or can be used to generate a full LLM generated video.
